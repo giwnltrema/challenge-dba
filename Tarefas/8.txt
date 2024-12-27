@@ -1,0 +1,38 @@
+Tarefa 8: Explicando os ajustes
+
+1) Uso do tipo UUID
+
+-Usei esse tipo de campo em vez de SERIAL ou BIGSERIAL em todas as tabelas.
+-Dessa forma, deixamos o banco preparado para o futuro, sem nos preocuparmos com IDs em duplicidade.
+-É necessário configurar a extensão para funcionar a conversão e utilizar uuid_generate_v4().
+
+2) Exclusão lógica
+
+-Implantada de forma simples, utilizando o campo deleted_at diretamente no script.
+-As consultas podem usar WHERE deleted_at IS NULL ou IS NOT NULL para identificar os registros ativos ou inativos.
+-Dessa forma, evitamos perda de dados e nos preparamos para cumprir uma regra de LGPD, armazenando, se necessário, de forma correta, dados mesmo que no sistema tenham sido excluídos, pois ainda teremos o registro no banco para tracking.
+
+3) Índices parciais
+
+- Criamos unique indexes prevendo o ponto em que institution_id pode ser NULL, garantindo consultas em tenant_id, institution_id e person_id sem problemas, mesmo com o campo nulo.
+- Existem outras formas de implementar isso, mas essa solução é a mais rápida e a que menos impacta o banco de dados, sem necessidade de usar uma function ou algo do tipo.
+
+4) Adicionar o campo course_id em enrollment
+
+-Mesmo que no modelo original esse campo não faça parte da tabela, adicioná-lo seria útil, pois poderemos ter consultas utilizando esse campo.
+-Dessa forma, evitamos joins adicionais em algumas situações, melhorando a performance em várias queries.
+
+5) Particionamento
+
+- O particionamento da tabela enrollment foi implantado por range de data anual, mas poderia ser feito de outras formas de acordo com a necessidade.
+- Essa é uma forma simples que nos dá um bom ganho em performance. Na maior parte dos casos, o particionamento por data é eficiente, podendo reduzir ainda mais o range (Semestral, Trimestral, Mensal).
+
+6) Queries com boas práticas
+
+- Nas queries, tentei sempre manter um padrão, usando LIMIT em algumas situações para evitar consultas que impactem o banco em um cenário mais amplo, limitando o número de registros e melhorando a performance.
+- Evitei SELECT * para reduzir o impacto ao trazer os dados em tela. Algumas queries podem ficar lentas simplesmente por precisar exibir muitos registros; assim, contornamos esse tipo de problema.
+
+7) Documentação
+
+- As alterações e implementações feitas estão comentadas de forma simples e clara para melhor entendimento. Poderíamos ter um versionamento em cima disso, o que não está implantado neste caso.
+- Expliquei ao máximo as decisões tomadas com base no projeto solicitado. Dependendo de como o cliente utilizaria o sistema, poderíamos fazer mais alterações e sugerir novas melhorias e mudanças em cima desta base.
