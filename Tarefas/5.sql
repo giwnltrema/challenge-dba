@@ -1,3 +1,5 @@
+-- TAREFA 5: Query de busca de matrículas por curso em uma determinada instituição
+
 /*
     Essa query filtra o tenant_id e institution_id obrigatoriamente, dessa forma podemos ir para a segunda parte que seria buscar no campo de metadata da tabela person os registros que estão dentro do JSONB correspondendo ao texto pesquisado.
     Também foi implantado o filtro por e.deleted_at IS NULL para trazer somente registros válidos.
@@ -5,9 +7,9 @@
 */
 
 SELECT
-   c.id AS "course_id",
-    c.name AS "course_name",
-    COUNT(e.id) AS "total_enrollments"
+    c.id        AS course_id,
+    c.name      AS course_name,
+    COUNT(e.id) AS total_enrollments
 FROM enrollment e
 JOIN person p
     ON e.person_id = p.id
